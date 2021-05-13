@@ -9,24 +9,52 @@ http://www.mulesoft.org/schema/mule/category-system-api http://www.mulesoft.org/
 http://www.mulesoft.org/schema/mule/evaluation-systems-assessment-api http://www.mulesoft.org/schema/mule/evaluation-systems-assessment-api/current/mule-evaluation-systems-assessment-api.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
 	<flow name="get-average-by-category" doc:id="483b9c63-c34b-4576-a717-6cc551981515" >
-		<set-variable value="0" doc:name="aggregate-score" doc:id="df523b9a-fceb-4d7f-97e7-33ffd2810610" variableName="aggregate-score"/>
-		<set-variable value="" doc:name="count" doc:id="e7a53401-fde6-49d4-bc7a-75c66ae9b789" variableName="count"/>
-		<batch:job jobName="assessment-aggregation-papi-implBatch_Job" doc:id="acb302c2-0f7b-406c-b00e-d7bc7337f1a2" >
-			<batch:process-records >
-				<batch:step name="Batch_Step" doc:id="ed1d2e8c-a6cb-414a-9b9c-f93228a94492" />
-				<batch:step name="Batch_Step1" doc:id="2dcf7c67-1831-4aad-91ee-9a917e8de38d" />
-			</batch:process-records>
-		</batch:job>
-		<flow-ref doc:name="get-all-grades" doc:id="8bbdc964-2206-4adf-b599-304330bf44ea" name="get-all-grades"/>
-		<logger level="INFO" doc:name="Logger" doc:id="f52e9a8a-7fff-4078-8ef9-84d988620081" message="#[payload]"/>
-		<foreach doc:name="For Each" doc:id="1002ecb2-5156-432a-a5d5-dc963ff8819c" >
-			<flow-ref doc:name="get-assessments-by-id" doc:id="6a5dcdb9-dd34-4a61-978a-6c7ad25b1bd7" name="get-assessments-by-id"/>
-			<logger level="INFO" doc:name="Logger" doc:id="eeebd129-0923-45c5-8663-8ad167506998" message="#[payload]"/>
-			<foreach doc:name="For Each" doc:id="1514148d-1ef7-4539-8f79-52a306ffe60b" >
-				<flow-ref doc:name="get-category-by-id" doc:id="33a56f6a-608c-4328-88d2-2481382027cd" name="get-category-by-id"/>
-				<logger level="INFO" doc:name="Logger" doc:id="3260c679-2f48-41fa-899a-2680a366551d" message="#[payload]"/>
+		<flow-ref doc:name="get-all-categories" doc:id="5d2a1d18-0136-4340-ab7a-0fc8fe357f17" name="get-all-categories"/>
+		<batch:job jobName="assessment-aggregation-papi-implBatch_Job" doc:id="acb302c2-0f7b-406c-b00e-d7bc7337f1a2">
+			<batch:process-records>
+				<batch:step name="Batch_Step" doc:id="ed1d2e8c-a6cb-414a-9b9c-f93228a94492" >
+					<flow-ref doc:name="get-all-grades" doc:id="8bbdc964-2206-4adf-b599-304330bf44ea" name="get-all-grades" />
+					<logger level="INFO" doc:name="Logger" doc:id="f52e9a8a-7fff-4078-8ef9-84d988620081" message="#[payload]" />
+					<foreach doc:name="For Each" doc:id="1002ecb2-5156-432a-a5d5-dc963ff8819c">
+			<flow-ref doc:name="get-assessments-by-id" doc:id="6a5dcdb9-dd34-4a61-978a-6c7ad25b1bd7" name="get-assessments-by-id" />
+			<logger level="INFO" doc:name="Logger" doc:id="eeebd129-0923-45c5-8663-8ad167506998" message="#[payload]" />
+			<foreach doc:name="For Each" doc:id="1514148d-1ef7-4539-8f79-52a306ffe60b">
+				<flow-ref doc:name="get-category-by-id" doc:id="33a56f6a-608c-4328-88d2-2481382027cd" name="get-category-by-id" />
+				<logger level="INFO" doc:name="Logger" doc:id="3260c679-2f48-41fa-899a-2680a366551d" message="#[payload]" />
+							<ee:transform doc:name="Transform Message" doc:id="80a5ced8-1a40-44e8-9bf7-0916f5b4bb21" >
+								<ee:message >
+								</ee:message>
+								<ee:variables >
+									<ee:set-variable variableName="categoryList" ><![CDATA[%dw 2.0
+output application/java
+---
+if(vars."category-list".category == payload.skillCategory){
+		category: vars."category-list".category,
+		sum: vars."category-list".sum + payload.score,
+		count: vars."category-list".count + 1
+	} else {
+		category: vars."category-list".category,
+		sum: vars."category-list".sum,
+		count: vars."category-list".count
+	}]]></ee:set-variable>
+								</ee:variables>
+							</ee:transform>
+							<ee:transform doc:name="Transform Message" doc:id="67fc356f-55c0-478e-aa22-8aa4584fd2ff" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	skillCategory: payload01.skillCategory,
+	score: vars."category-list".sum / vars."category-list".count
+}]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
 			</foreach>
 		</foreach>
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
 	</flow>
 	<sub-flow name="get-all-grades" doc:id="7f881b52-67bf-4889-aec1-e35ca18ec7e9" >
 		<evaluation-systems-assessment-api:get-grades doc:name="Get grades" doc:id="cbc758ec-b353-4af1-bea9-58fa94e8f406" config-ref="Evaluation_Systems_Assessment_API_Config"/>
@@ -83,6 +111,22 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 	score: vars.score
 }]]></ee:set-payload>
 			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="get-all-categories" doc:id="9b0fd33a-147e-423b-b26a-a4c1e5ec6f88" >
+		<category-system-api:get-categories doc:name="Get categories" doc:id="a436f36d-6adf-48a4-8196-b2389f7599b9" config-ref="Category_System_API_Config" />
+		<ee:transform doc:name="Transform Message" doc:id="4d685d38-24e4-4ad3-81d9-d28208ec98bd">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="category-list" ><![CDATA[%dw 2.0
+output application/java
+---
+{	category: payload.skillCategory,
+	sum: 0,
+	count: 0
+}]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
 	</sub-flow>
 </mule>

@@ -9,6 +9,6 @@ http://www.mulesoft.org/schema/mule/evaluation-systems-assessment-api http://www
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d79aae9c-5e60-4a49-9f92-240783ff659a" >
 		<http:listener-connection host="0.0.0.0" port="8082" />
 	</http:listener-config>
-	<category-system-api:config name="Category_System_API_Config" doc:name="Category System API Config" doc:id="33716871-5c88-44aa-8626-f6f875c45830" property_host="category-sapi.us-e2.cloudhub.io" property_port="8081" property_protocol="HTTP" property_basePath="/api" property_responseTimeout="1000000000"/>
-	<evaluation-systems-assessment-api:config name="Evaluation_Systems_Assessment_API_Config" doc:name="Evaluation Systems Assessment API Config" doc:id="887e3953-376a-4a17-934e-3e01c81851bb" property_host="evaluation-assessment-sapi.us-e2.cloudhub.io" property_port="8081" property_protocol="HTTP" property_basePath="/api" property_responseTimeout="1000000"/>
+	<category-system-api:config name="Category_System_API_Config" doc:name="Category System API Config" doc:id="33716871-5c88-44aa-8626-f6f875c45830" property_host="category-sapi.us-e2.cloudhub.io" property_port="80" property_protocol="HTTP" property_basePath="/api" property_responseTimeout="1000000000"/>
+	<evaluation-systems-assessment-api:config name="Evaluation_Systems_Assessment_API_Config" doc:name="Evaluation Systems Assessment API Config" doc:id="887e3953-376a-4a17-934e-3e01c81851bb" property_host="evaluation-assessment-sapi.us-e2.cloudhub.io" property_port="80" property_protocol="HTTP" property_basePath="/api" property_responseTimeout="1000000"/>
 </mule>

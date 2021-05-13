@@ -26,6 +26,13 @@ type grade_data = Array<{|  assessmentId: Number {"typeId": "int"},   score: Num
       <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
 type: string]]></types:shape>
     </types:type>
+    <types:type name="category-output" format="json">
+      <types:shape format="weave" example="api/Examples/gradeAssessmentCategory.json"><![CDATA[%dw 2.0
+
+type category_output = Array<{|  score: Number {"typeId": "double"},   skillCategory: String|}> {"example": "[{\\\"score\\\":83.40503,\\\"skillCategory\\\":\\\"Necromancy\\\"}]"}
+
+]]></types:shape>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#dd37fece-a17a-4421-a19a-1497fb528c8d">
     <types:processor-declaration>
@@ -91,4 +98,15 @@ type: string]]></types:shape>
     </types:processor-declaration>
   </types:enrichment>
   <types:enrichment select="#1c9c47e6-84b6-4c10-b5fe-192a0e373f63"/>
+  <types:enrichment select="#4d685d38-24e4-4ad3-81d9-d28208ec98bd"/>
+  <types:enrichment select="#80a5ced8-1a40-44e8-9bf7-0916f5b4bb21"/>
+  <types:enrichment select="#67fc356f-55c0-478e-aa22-8aa4584fd2ff">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="category-output"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>
