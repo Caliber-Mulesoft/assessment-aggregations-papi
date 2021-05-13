@@ -56,6 +56,7 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 			</batch:process-records>
 		</batch:job>
 	</flow>
+	<flow name="get-average-by-type" doc:id="b274efb0-7908-49a1-ada4-3b078c052013" />
 	<sub-flow name="get-all-grades" doc:id="7f881b52-67bf-4889-aec1-e35ca18ec7e9" >
 		<evaluation-systems-assessment-api:get-grades doc:name="Get grades" doc:id="cbc758ec-b353-4af1-bea9-58fa94e8f406" config-ref="Evaluation_Systems_Assessment_API_Config"/>
 		<ee:transform doc:name="Transform Message" doc:id="8b223ccd-c30d-43d3-82d5-72f1fa02a875" >

@@ -127,22 +127,6 @@ output application/json
 		<flow-ref doc:name='get-average-by-category' doc:id="8ac2c707-9a4a-4deb-ba44-b423c1b47399" name="get-average-by-category"/>
     </flow>
     <flow name="get:\type\average:assessments-process-api-config">
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    assessmentType: "Written Evaluation",
-    aggregatedScore: 89.65
-  }, 
-  {
-    assessmentType: "Oral Exam",
-    aggregatedScore: 76.25
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="get-average-by-type" doc:id="39c8e45f-6901-4377-aa5c-d07518a48431" name="get-average-by-type"/>
     </flow>
 </mule>
