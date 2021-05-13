@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="category" format="json">
+      <types:shape format="weave" example="api/Examples/gradeAssessmentCategory.json"><![CDATA[%dw 2.0
+
+type category = Array<{|  score: Number {"typeId": "double"},   skillCategory: String|}> {"example": "[{\\\"score\\\":83.40503,\\\"skillCategory\\\":\\\"Necromancy\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="assessment-data" format="json">
+      <types:shape format="weave" example="api/Examples/gradeAssessmentExample.json"><![CDATA[%dw 2.0
+
+type assessment_data = Array<{|  score: Number {"typeId": "double"},   assessmentCategory: Number {"typeId": "int"},   assessmentType: String|}> {"example": "[{\\\"score\\\":83.40503,\\\"assessmentCategory\\\":13,\\\"assessmentType\\\":\\\"Presentation\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="grade-data" format="json">
+      <types:shape format="weave" example="api/Examples/gradeInputExample.json"><![CDATA[%dw 2.0
+
+type grade_data = Array<{|  assessmentId: Number {"typeId": "int"},   score: Number {"typeId": "int"}|}> {"example": "[{\\\"assessmentId\\\":0,\\\"score\\\":0}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="grade-input" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#dd37fece-a17a-4421-a19a-1497fb528c8d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="assessment-data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7e6e0cf6-1ff5-4ed5-83da-7deaf2064928">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="grade-data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#9558da59-b552-41be-ba23-8a055be7c17e">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="assessment-data"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8b223ccd-c30d-43d3-82d5-72f1fa02a875">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="grade-data"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#fcf4f080-0fd0-46dd-8df4-32b5d29b1062">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="grade-data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#bc9783b5-2dba-43a4-b9c2-656e9285f5e5">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="assessment-data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5f2600e8-40bc-4b65-830f-a8b64e979a32">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="category"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#1c9c47e6-84b6-4c10-b5fe-192a0e373f63"/>
+</types:mule>

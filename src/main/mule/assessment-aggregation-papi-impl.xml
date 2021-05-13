@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:evaluation-systems-assessment-api="http://www.mulesoft.org/schema/mule/evaluation-systems-assessment-api"
+	xmlns:category-system-api="http://www.mulesoft.org/schema/mule/category-system-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/category-system-api http://www.mulesoft.org/schema/mule/category-system-api/current/mule-category-system-api.xsd
+http://www.mulesoft.org/schema/mule/evaluation-systems-assessment-api http://www.mulesoft.org/schema/mule/evaluation-systems-assessment-api/current/mule-evaluation-systems-assessment-api.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<flow name="get-average-by-category" doc:id="483b9c63-c34b-4576-a717-6cc551981515" >
+		<set-variable value="0" doc:name="aggregate-score" doc:id="df523b9a-fceb-4d7f-97e7-33ffd2810610" variableName="aggregate-score"/>
+		<set-variable value="" doc:name="count" doc:id="e7a53401-fde6-49d4-bc7a-75c66ae9b789" variableName="count"/>
+		<batch:job jobName="assessment-aggregation-papi-implBatch_Job" doc:id="acb302c2-0f7b-406c-b00e-d7bc7337f1a2" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="ed1d2e8c-a6cb-414a-9b9c-f93228a94492" />
+				<batch:step name="Batch_Step1" doc:id="2dcf7c67-1831-4aad-91ee-9a917e8de38d" />
+			</batch:process-records>
+		</batch:job>
+		<flow-ref doc:name="get-all-grades" doc:id="8bbdc964-2206-4adf-b599-304330bf44ea" name="get-all-grades"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f52e9a8a-7fff-4078-8ef9-84d988620081" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="1002ecb2-5156-432a-a5d5-dc963ff8819c" >
+			<flow-ref doc:name="get-assessments-by-id" doc:id="6a5dcdb9-dd34-4a61-978a-6c7ad25b1bd7" name="get-assessments-by-id"/>
+			<logger level="INFO" doc:name="Logger" doc:id="eeebd129-0923-45c5-8663-8ad167506998" message="#[payload]"/>
+			<foreach doc:name="For Each" doc:id="1514148d-1ef7-4539-8f79-52a306ffe60b" >
+				<flow-ref doc:name="get-category-by-id" doc:id="33a56f6a-608c-4328-88d2-2481382027cd" name="get-category-by-id"/>
+				<logger level="INFO" doc:name="Logger" doc:id="3260c679-2f48-41fa-899a-2680a366551d" message="#[payload]"/>
+			</foreach>
+		</foreach>
+	</flow>
+	<sub-flow name="get-all-grades" doc:id="7f881b52-67bf-4889-aec1-e35ca18ec7e9" >
+		<evaluation-systems-assessment-api:get-grades doc:name="Get grades" doc:id="cbc758ec-b353-4af1-bea9-58fa94e8f406" config-ref="Evaluation_Systems_Assessment_API_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="8b223ccd-c30d-43d3-82d5-72f1fa02a875" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	assessmentId: payload01.assessmentId,
+	score: payload01.score
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="get-grades-by-id" doc:id="2a4ef798-0140-4ec1-a1f7-3e11f7c030af" >
+		<evaluation-systems-assessment-api:get-grade-by-id doc:name="Get grade by id" doc:id="ee8ded1a-31c0-435a-81f7-fa1c9d46854b" config-ref="Evaluation_Systems_Assessment_API_Config" id="w"/>
+		<ee:transform doc:name="Transform Message" doc:id="75f286a8-02a0-4158-9809-0dafb6795f39">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="get-assessments-by-id" doc:id="0804d5ae-7bc3-44b1-a6b7-beb649e2c7b8" >
+		<set-variable value="#[payload.score]" doc:name="gradeScore" doc:id="fcf4f080-0fd0-46dd-8df4-32b5d29b1062" variableName="gradeScore" />
+		<evaluation-systems-assessment-api:get-assessment-by-id doc:name="Get assessment by id" doc:id="7e6e0cf6-1ff5-4ed5-83da-7deaf2064928" config-ref="Evaluation_Systems_Assessment_API_Config" id="#[payload.assessmentId]"/>
+		<ee:transform doc:name="Transform Message" doc:id="9558da59-b552-41be-ba23-8a055be7c17e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	assessmentCategory: payload01.assessmentCategory,
+	assessmentType: payload01.assessmentType,
+	score: vars.gradeScore
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="get-category-by-id" doc:id="80e4bffe-6e2e-4d33-819a-41cd04e62201" >
+		<set-variable value="#[payload.score]" doc:name="score" doc:id="bc9783b5-2dba-43a4-b9c2-656e9285f5e5" variableName="score	"/>
+		<category-system-api:get-category-by-id doc:name="Get category by id" doc:id="dd37fece-a17a-4421-a19a-1497fb528c8d" config-ref="Category_System_API_Config" id="#[payload.assessmentCategory]"/>
+		<ee:transform doc:name="Transform Message" doc:id="5f2600e8-40bc-4b65-830f-a8b64e979a32" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	skillCategory: payload01.skillCategory,
+	score: vars.score
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
