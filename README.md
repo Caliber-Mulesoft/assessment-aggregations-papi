@@ -76,4 +76,7 @@ Example response:
     libraries or resources that must be manually added to run the project, if any. -->
 
 # AUTHORS
-Christopher Proutt
+- Christopher Proutt
+- Diego Franchi
+- Daniel Beintema
+- Kevin Novikov
