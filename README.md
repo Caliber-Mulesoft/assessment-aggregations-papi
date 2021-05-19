@@ -19,7 +19,7 @@ The Assessment Aggregation API app is a process level api that allows users to g
 - Rename or delete repository
 - Rename settings.xml
 - git clone https://github.com/Caliber-Mulesoft/assessment-aggregations-papi.git
-- Import project qc-system-api into Anypoint Studio (the folder containing the project has the same name).
+- Import project AssessmentsProcessAPI into Anypoint Studio (the folder containing the project has the same name).
 - Deploy to CloudHub (Anypoint Platform)
 - Please refer to the SETUP document for more detailed installation steps.
   
