@@ -31,9 +31,6 @@ The Assessment Aggregation API app is a process level api that allows users to g
 - HTTP connector 1.5.24
 - APIkit 1.5.1
 
-# ENVIRONMENT VARIABLES
-N/A
-
 # USAGE EXAMPLES
 Get the average of assessments by category: /category/average: 
 
@@ -66,14 +63,6 @@ Example response:
   }
 ]
 ```
-
-# ROADMAP
-  <!--Include a list of bugs/issues and possible future fixes here. 
-      Don't fill this out until we reach code freeze or if you are ready to deploy.-->
-
-# ADDITIONAL MATERIAL
-  <!-- Include a list of any additional materials, like external 
-    libraries or resources that must be manually added to run the project, if any. -->
 
 # AUTHORS
 - Christopher Proutt
